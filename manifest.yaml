@@ -1,9 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: the-clock-app
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: the-clock-app
-  namespace: default
+  namespace: the-clock-app
 spec:
   replicas: 1
   selector:
@@ -32,7 +36,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: the-clock-app-service
-  namespace: default
+  namespace: the-clock-app
 spec:
   ports:
   - port: 80
@@ -45,9 +49,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: the-clock-app-ingress
-  namespace: default
-  annotations:
-    kubernetes.io/ingress.class: "traefik"
+  namespace: the-clock-app
 spec:
   rules:
   - http:
