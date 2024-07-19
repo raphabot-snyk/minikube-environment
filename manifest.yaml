@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: the-clock-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: the-clock-app
+  template:
+    metadata:
+      labels:
+        app: the-clock-app
+    spec:
+      containers:
+        - name: the-clock-app
+          image: docker.io/raphabot/the-clock-app:1.0.0
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 80
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: the-clock-app-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    name: tcp
+  selector:
+    app: the-clock-app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: the-clock-app-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: the-clock-app-service
+            port:
+              number: 80
